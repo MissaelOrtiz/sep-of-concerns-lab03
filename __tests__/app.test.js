@@ -16,26 +16,51 @@ describe('03_separation-of-concerns-demo routes', () => {
     return setup(pool);
   });
 
-  it('creates a new order in our database and sends a text message', () => {
-    return request(app)
+  it('creates a new order in our database and sends a text message', async () => {
+    const res = await request(app)
       .post('/api/v1/orders')
-      .send({ quantity: 10 })
+      .send({ quantity: 10 });
+    // expect(createMessage).toHaveBeenCalledTimes(1);
+    expect(res.body).toEqual({
+      id: '1',
+      quantity: 10,
+    });
+  });
+  
+  it('gets all orders from the db', async () => {
+    const order = await Order.insert({ quantity: 10 });
+
+    return request(app)
+      .get('/api/v1/orders')
       .then((res) => {
-        // expect(createMessage).toHaveBeenCalledTimes(1);
-        expect(res.body).toEqual({
-          id: '1',
-          quantity: 10,
-        });
+        expect(res.body).toEqual([order]);
       });
   });
+  it('gets an order by id', async () => {
+    const order = await Order.insert({ quantity: 10 });
 
-  // it('gets an order by id', async () => {
-  //   const order = await Order.insert({ quantity: 10 });
+    return request(app)
+      .get(`/api/v1/orders/${order.id}`)
+      .then((res) => {
+        expect(res.body).toEqual(order);
+      });
+  });
+  it('updates an order by id', async () => {
+    const order = await Order.insert({ quantity: 10 });
 
-  //   return request(app)
-  //     .get(`/api/v1/orders/${order.id}`)
-  //     .then((res) => {
-  //       expect(res.body).toEqual(order);
-  //     });
-  // });
+    return request(app)
+      .put(`/api/v1/orders/${order.id}`)
+      .send({ quantity: 11 })
+      .then((res) => {
+        expect(res.body).toEqual({ id: '1', quantity: 11 });
+      });
+  });
+  it('deletes an order by id', async () => {
+    const order = await Order.insert({ quantity: 10 });
+    return request(app)
+      .delete(`/api/v1/orders/${order.id}`)
+      .then((res) => {
+        expect(res.body).not.toContain(order);
+      });
+  });
 });
