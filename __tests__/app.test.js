@@ -45,15 +45,16 @@ describe('03_separation-of-concerns-demo routes', () => {
         expect(res.body).toEqual(order);
       });
   });
-  // it('updates and order by id', async () => {
-  //   const order = await Order.insert({ quantity: 10 });
+  it('updates an order by id', async () => {
+    const order = await Order.insert({ quantity: 10 });
 
-  //   return request(app)
-  //     .get('/api/v1/orders')
-  //     .then((res) => {
-  //       expect(res.body).toEqual([order]);
-  //     });
-  // });
+    return request(app)
+      .put(`/api/v1/orders/${order.id}`)
+      .send({ quantity: 11 })
+      .then((res) => {
+        expect(res.body).toEqual({ id: '1', quantity: 11 });
+      });
+  });
   it('deletes an order by id', async () => {
     const order = await Order.insert({ quantity: 10 });
     return request(app)
