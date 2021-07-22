@@ -16,19 +16,26 @@ describe('03_separation-of-concerns-demo routes', () => {
     return setup(pool);
   });
 
-  it('creates a new order in our database and sends a text message', () => {
-    return request(app)
+  it('creates a new order in our database and sends a text message', async () => {
+    const res = await request(app)
       .post('/api/v1/orders')
-      .send({ quantity: 10 })
-      .then((res) => {
-        // expect(createMessage).toHaveBeenCalledTimes(1);
-        expect(res.body).toEqual({
-          id: '1',
-          quantity: 10,
-        });
-      });
+      .send({ quantity: 10 });
+    // expect(createMessage).toHaveBeenCalledTimes(1);
+    expect(res.body).toEqual({
+      id: '1',
+      quantity: 10,
+    });
   });
+  
+  // it('gets all orders from the db', async () => {
+  //   const order = await Order.insert({ quantity: 10 });
 
+  //   return await request(app)
+  //     .get('/api/v1/orders')
+  //     .then((res) => {
+  //       expect(res.body).toEqual([order]);
+  //     });
+  // });
   // it('gets an order by id', async () => {
   //   const order = await Order.insert({ quantity: 10 });
 
